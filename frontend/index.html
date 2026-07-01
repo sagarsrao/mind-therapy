@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindTherapy — Self-Check-in Journal</title>
+    <meta name="description" content="A private, secure, and supportive daily check-in journal to track your mood and reflect on your day.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Premium Scope Disclosure Banner -->
+    <div id="disclosure-banner" class="disclosure-banner">
+        <div class="banner-content">
+            <i data-lucide="info" class="banner-icon"></i>
+            <span>
+                <strong>Scope Disclosure:</strong> MindTherapy is a self-reflective check-in journal, not therapy or clinical counseling. We do not diagnose, treat, or perform clinical risk assessments through dialogue. If you are in distress, free and confidential professional support is available immediately.
+            </span>
+        </div>
+        <button class="banner-close-btn" onclick="document.getElementById('disclosure-banner').style.display='none'" aria-label="Close banner">
+            <i data-lucide="x"></i>
+        </button>
+    </div>
+
+    <div class="app-container">
+        <!-- Sidebar / Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <div class="brand">
+                    <div class="brand-logo">
+                        <i data-lucide="brain-circuit"></i>
+                    </div>
+                    <div class="brand-text">
+                        <h1>MindTherapy</h1>
+                        <span class="subtext">Secure Journal</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-item active" id="nav-journal">
+                    <i data-lucide="book-open"></i>
+                    <span>Check-in Journal</span>
+                </button>
+                <button class="nav-item" id="nav-trends">
+                    <i data-lucide="line-chart"></i>
+                    <span>Mood & Insights</span>
+                </button>
+                <button class="nav-item" id="nav-evals">
+                    <i data-lucide="shield-check"></i>
+                    <span>Safety Evals</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <div class="user-info">
+                        <span class="user-name">Default User</span>
+                        <span class="user-status">Local Session</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="app-main">
+            <!-- Journal Section -->
+            <section id="section-journal" class="content-section active">
+                <div class="section-header">
+                    <div>
+                        <h2>Daily Check-in</h2>
+                        <p class="section-desc">Write a reflection about your day. Your thoughts are kept private.</p>
+                    </div>
+                </div>
+
+                <div class="journal-grid">
+                    <!-- Chat/Journal Panel -->
+                    <div class="journal-panel glass-panel">
+                        <div class="chat-header">
+                            <div class="agent-status">
+                                <span class="status-dot"></span>
+                                <span>Check-in Companion</span>
+                            </div>
+                            <div class="header-actions">
+                                <button class="btn-icon" id="btn-clear-chat" title="Clear Journal Session">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Welcome Message -->
+                            <div class="message system-message">
+                                <div class="message-content">
+                                    <p>Welcome to your MindTherapy journal. How are you feeling today? You can write a few sentences about your day, your mood, or what's on your mind.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Routing Indicator (Shows status of safety check in real-time) -->
+                        <div class="routing-status-bar hidden" id="routing-status-bar">
+                            <span class="routing-spinner"></span>
+                            <span id="routing-status-text">Analyzing safety & memory trends...</span>
+                        </div>
+
+                        <div class="chat-input-container">
+                            <form id="journal-form" class="journal-form">
+                                <textarea 
+                                    id="journal-input" 
+                                    placeholder="Write your entry here... (e.g., 'Feeling a bit stressed about work, but looking forward to the weekend.')"
+                                    required
+                                    rows="2"
+                                    maxlength="1000"
+                                ></textarea>
+                                <button type="submit" class="btn-send" id="btn-submit-entry" aria-label="Send entry">
+                                    <i data-lucide="arrow-up-right"></i>
+                                    <span>Log Entry</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Side Insights Panel (Quick view) -->
+                    <div class="side-insights-panel">
+                        <!-- Quick Mood Card -->
+                        <div class="glass-panel stat-card">
+                            <h3>Current Mood Trend</h3>
+                            <div class="mood-trend-value" id="quick-mood-trend">—</div>
+                            <p class="trend-description" id="quick-mood-desc">Log your first entry to see trends.</p>
+                        </div>
+
+                        <!-- Quick Themes Card -->
+                        <div class="glass-panel themes-card">
+                            <h3>Recurring Themes</h3>
+                            <div class="themes-list" id="quick-themes">
+                                <div class="empty-state">No themes detected yet.</div>
+                            </div>
+                        </div>
+
+                        <!-- Emergency Help Card (Always accessible) -->
+                        <div class="glass-panel emergency-card">
+                            <div class="emergency-header">
+                                <i data-lucide="heart-handshake"></i>
+                                <h3>Need Support?</h3>
+                            </div>
+                            <p>If you need to talk to someone right now, free and confidential help is available 24/7.</p>
+                            <div class="emergency-buttons">
+                                <a href="tel:988" class="btn-emergency btn-988">Call 988 (Lifeline)</a>
+                                <a href="https://988lifeline.org/chat/" target="_blank" rel="noopener" class="btn-emergency-secondary">Chat Online</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Mood & Insights Section -->
+            <section id="section-trends" class="content-section">
+                <div class="section-header">
+                    <h2>Mood & Insights</h2>
+                    <p class="section-desc">Understand your emotional trajectories and patterns over time.</p>
+                </div>
+
+                <div class="insights-grid">
+                    <div class="glass-panel chart-panel">
+                        <h3>Mood Trajectory</h3>
+                        <div class="chart-container">
+                            <canvas id="mood-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel history-panel">
+                        <h3>Logged Entries</h3>
+                        <div class="history-list" id="history-list">
+                            <div class="empty-state">No entries logged yet.</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Safety Evals Section -->
+            <section id="section-evals" class="content-section">
+                <div class="section-header">
+                    <h2>Safety & Guardrails Evaluation Dashboard</h2>
+                    <p class="section-desc">Verify the safety classifier against our synthetic test suite containing routine, ambiguous, and crisis-coded inputs.</p>
+                </div>
+
+                <div class="evals-dashboard">
+                    <!-- Action Panel -->
+                    <div class="glass-panel eval-action-card">
+                        <div class="eval-action-info">
+                            <h3>Run Safety Test Suite</h3>
+                            <p>Execute the evaluation suite against 25 synthetic test cases to measure the precision, recall, and safety guardrail performance of the system.</p>
+                        </div>
+                        <button class="btn-primary" id="btn-run-eval">
+                            <i data-lucide="play"></i>
+                            <span>Execute Test Suite</span>
+                        </button>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="metrics-grid">
+                        <div class="glass-panel metric-card">
+                            <span class="metric-label">Overall Accuracy</span>
+                            <span class="metric-value" id="eval-accuracy">—</span>
+                            <span class="metric-subtext">Total correct classifications</span>
+                        </div>
+                        <div class="glass-panel metric-card highlight-safety">
+                            <span class="metric-label">Crisis Recall</span>
+                            <span class="metric-value" id="eval-crisis-recall">—</span>
+                            <span class="metric-subtext">Percentage of crises caught (Goal: 100%)</span>
+                        </div>
+                        <div class="glass-panel metric-card">
+                            <span class="metric-label">Routine Precision</span>
+                            <span class="metric-value" id="eval-routine-precision">—</span>
+                            <span class="metric-subtext">Clarity of routine logging</span>
+                        </div>
+                        <div class="glass-panel metric-card">
+                            <span class="metric-label">Test Cases Run</span>
+                            <span class="metric-value" id="eval-total-cases">—</span>
+                            <span class="metric-subtext" id="eval-time-taken">No runs completed yet</span>
+                        </div>
+                    </div>
+
+                    <div class="eval-details-grid">
+                        <!-- Confusion Matrix -->
+                        <div class="glass-panel matrix-panel">
+                            <h3>Confusion Matrix</h3>
+                            <p class="panel-desc">Rows: Expected Ground Truth. Columns: Model Prediction.</p>
+                            <div class="matrix-table-container">
+                                <table class="matrix-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Expected \ Actual</th>
+                                            <th>Routine</th>
+                                            <th>Elevated</th>
+                                            <th>Crisis</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <th>Routine</th>
+                                            <td id="m-rr">—</td>
+                                            <td id="m-re">—</td>
+                                            <td id="m-rc">—</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Elevated</th>
+                                            <td id="m-er">—</td>
+                                            <td id="m-ee">—</td>
+                                            <td id="m-ec">—</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Crisis</th>
+                                            <td id="m-cr">—</td>
+                                            <td id="m-ce">—</td>
+                                            <td id="m-cc">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Test Cases Log -->
+                        <div class="glass-panel cases-panel">
+                            <h3>Test Cases Log</h3>
+                            <div class="cases-list-container">
+                                <table class="cases-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Case</th>
+                                            <th>Input Text</th>
+                                            <th>Expected</th>
+                                            <th>Actual</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eval-cases-body">
+                                        <tr>
+                                            <td colspan="5" class="empty-table-state">No evaluation run has been executed yet.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Real-time Agent Debug Drawer (Bottom Drawer) -->
+    <div class="debug-drawer" id="debug-drawer">
+        <button class="debug-drawer-toggle" id="debug-drawer-toggle">
+            <i data-lucide="terminal"></i>
+            <span>Agent Routing Debugger</span>
+            <i data-lucide="chevron-up" id="debug-chevron"></i>
+        </button>
+        <div class="debug-drawer-content">
+            <div class="debug-grid">
+                <div class="debug-column">
+                    <h4>1. Safety Classifier Output</h4>
+                    <div class="debug-card">
+                        <div class="debug-field">
+                            <span class="debug-label">Assigned Tier:</span>
+                            <span id="debug-class-tier" class="debug-value badge">—</span>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Confidence:</span>
+                            <span id="debug-class-conf" class="debug-value">—</span>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Classifier Reasoning:</span>
+                            <p id="debug-class-reason" class="debug-reason-text">No active session.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="debug-column">
+                    <h4>2. Memory Agent & Trend Analysis</h4>
+                    <div class="debug-card">
+                        <div class="debug-field">
+                            <span class="debug-label">Estimated Mood Score:</span>
+                            <span id="debug-mem-mood" class="debug-value">—</span>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Detected Trend:</span>
+                            <span id="debug-mem-trend" class="debug-value badge">—</span>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Trend Analysis:</span>
+                            <p id="debug-mem-reason" class="debug-reason-text">No active session.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="debug-column">
+                    <h4>3. Router Decision & Payload</h4>
+                    <div class="debug-card">
+                        <div class="debug-field">
+                            <span class="debug-label">Final Route:</span>
+                            <span id="debug-router-route" class="debug-value badge highlight">—</span>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Action Taken:</span>
+                            <p id="debug-router-action" class="debug-reason-text">Awaiting input.</p>
+                        </div>
+                        <div class="debug-field">
+                            <span class="debug-label">Detected Themes:</span>
+                            <div id="debug-router-themes" class="debug-themes-list">
+                                <span class="empty-state">None</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom App JS -->
+    <script src="app.js"></script>
+</body>
+</html>

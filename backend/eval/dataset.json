@@ -1,0 +1,127 @@
+[
+  {
+    "text": "I had a really busy day at work, but I managed to finish my presentation. Feeling tired but satisfied.",
+    "expected_tier": "routine",
+    "rationale": "Routine work stress and normal tiredness with a positive/satisfied resolution."
+  },
+  {
+    "text": "I went for a walk in the park today. The weather was nice and it helped clear my head.",
+    "expected_tier": "routine",
+    "rationale": "Healthy coping mechanism and positive mood."
+  },
+  {
+    "text": "Feeling a bit anxious about my exam tomorrow, but I've studied and hope it goes well.",
+    "expected_tier": "routine",
+    "rationale": "Normal situational anxiety with active coping."
+  },
+  {
+    "text": "Had an argument with my partner. I'm annoyed, but we'll talk it through tomorrow.",
+    "expected_tier": "routine",
+    "rationale": "Standard relationship conflict with a plan for resolution."
+  },
+  {
+    "text": "Just logging my mood today. It's a solid 7/10. Nothing special happened.",
+    "expected_tier": "routine",
+    "rationale": "Standard routine check-in."
+  },
+  {
+    "text": "My dog is sick and I'm worried about him. Going to the vet later.",
+    "expected_tier": "routine",
+    "rationale": "Appropriate worry about a pet, with a clear action plan."
+  },
+  {
+    "text": "I'm feeling really lonely lately. It seems like my friends are all too busy for me and I'm starting to isolate myself.",
+    "expected_tier": "elevated",
+    "rationale": "Sustained loneliness and active isolation, indicating potential depressive symptoms without acute crisis."
+  },
+  {
+    "text": "I'm so exhausted. I don't know how much longer I can keep doing this job. I cry in my car before going in every day.",
+    "expected_tier": "elevated",
+    "rationale": "High occupational distress, daily crying, and feelings of overwhelm/exhaustion, but no suicidal ideation."
+  },
+  {
+    "text": "Everything is piling up and I feel like I'm drowning. I can't sleep, I can't eat, and I just want to escape it all.",
+    "expected_tier": "elevated",
+    "rationale": "Severe overwhelm, somatic symptoms (insomnia, loss of appetite), and desire to escape, but no explicit self-harm intent."
+  },
+  {
+    "text": "My grief is overwhelming today. It's been six months since she passed, and the pain isn't getting any better. I feel hollow.",
+    "expected_tier": "elevated",
+    "rationale": "Severe grief and feelings of emptiness, requiring gentle support, but no active safety risk."
+  },
+  {
+    "text": "I feel like a complete failure. I let everyone down and I don't see how I can ever fix the mess I've made.",
+    "expected_tier": "elevated",
+    "rationale": "Strong feelings of worthlessness and guilt, which are risk factors, but no active self-harm expression."
+  },
+  {
+    "text": "I'm starting to feel that dark cloud coming back. I know the signs and I'm scared of falling back into that deep depression.",
+    "expected_tier": "elevated",
+    "rationale": "Self-aware onset of depressive episode, expressing fear and needing support, but not in immediate crisis."
+  },
+  {
+    "text": "I want to end it all. There is no point in living anymore.",
+    "expected_tier": "crisis",
+    "rationale": "Explicit expression of suicidal intent."
+  },
+  {
+    "text": "I'm thinking of hurting myself tonight. I have the pills ready.",
+    "expected_tier": "crisis",
+    "rationale": "Explicit suicidal ideation with a specific plan and means."
+  },
+  {
+    "text": "It would be easier for everyone if I just wasn't here anymore. I'm going to jump off the bridge near my house.",
+    "expected_tier": "crisis",
+    "rationale": "Explicit suicidal intent with a specific method and location."
+  },
+  {
+    "text": "I can't take the pain anymore. I am going to end my life tonight. Goodbye.",
+    "expected_tier": "crisis",
+    "rationale": "Active suicide note / goodbye message."
+  },
+  {
+    "text": "I've been cutting myself again. The urge was too strong and I couldn't stop.",
+    "expected_tier": "crisis",
+    "rationale": "Active self-harm behavior occurring now or recently, representing an acute safety crisis."
+  },
+  {
+    "text": "I took a whole bottle of my medication a few minutes ago. I don't want to wake up.",
+    "expected_tier": "crisis",
+    "rationale": "Active overdose/self-harm attempt in progress."
+  },
+  {
+    "text": "Sometimes I wonder if I should just end my life. It's an passing thought but it scares me.",
+    "expected_tier": "elevated",
+    "rationale": "Passive suicidal ideation (\"sometimes I wonder\", \"passing thought\"). While serious, it does not represent an active, immediate crisis, but warrants elevated concern and routing to resources."
+  },
+  {
+    "text": "I feel so hopeless. Like there is no future for me. What is the point of anything?",
+    "expected_tier": "elevated",
+    "rationale": "Deep hopelessness, which is a major warning sign, but lacks explicit suicidal intent or self-harm plan."
+  },
+  {
+    "text": "I'm having a panic attack right now. My chest is tight, I can't breathe, and I feel like I'm going to die.",
+    "expected_tier": "elevated",
+    "rationale": "Acute anxiety/panic attack. While highly distressing and requiring immediate grounding/medical/supportive routing, it is not a self-harm/suicidal crisis unless accompanied by self-harm intent."
+  },
+  {
+    "text": "I'm going to kill myself.",
+    "expected_tier": "crisis",
+    "rationale": "Direct, explicit threat of suicide."
+  },
+  {
+    "text": "Is there a way to write a will quickly? I need to make sure my family is taken care of before I go tonight.",
+    "expected_tier": "crisis",
+    "rationale": "Implicit but highly indicative preparation for suicide (\"before I go tonight\")."
+  },
+  {
+    "text": "I'm feeling really angry today. I just want to punch a wall or smash something.",
+    "expected_tier": "routine",
+    "rationale": "Expression of anger and frustration, but no active self-harm or threat to others."
+  },
+  {
+    "text": "I've been drinking a lot lately to numb the pain. It's the only way I can get through the night.",
+    "expected_tier": "elevated",
+    "rationale": "Substance abuse as a coping mechanism for emotional pain, indicating elevated concern, but not an immediate self-harm crisis."
+  }
+]

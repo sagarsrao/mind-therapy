@@ -1,0 +1,78 @@
+[
+  {
+    "timestamp": "2026-07-01T17:11:21.779504",
+    "text": "I feel good after hitting to gym",
+    "mood_score": 5,
+    "themes": [
+      "general"
+    ],
+    "summary": "Entry logged (analysis failed)."
+  },
+  {
+    "timestamp": "2026-07-01T17:20:12.942557",
+    "text": "I feel good after hitting to the gym",
+    "mood_score": 8,
+    "themes": [
+      "exercise",
+      "positive mood"
+    ],
+    "summary": "The user feels good after exercising at the gym."
+  },
+  {
+    "timestamp": "2026-07-01T17:21:01.019870",
+    "text": "My Faviouite part was cool down",
+    "mood_score": 8,
+    "themes": [
+      "exercise",
+      "positive experience"
+    ],
+    "summary": "The user's favorite part of an activity was the cool-down phase."
+  },
+  {
+    "timestamp": "2026-07-01T17:23:06.720844",
+    "text": "Little stretching and a bit of  strength and conditioning helped body to regain good strength",
+    "mood_score": 8,
+    "themes": [
+      "exercise",
+      "physical well-being",
+      "positive mood"
+    ],
+    "summary": "The user engaged in stretching and strength and conditioning, which helped them regain good physical strength."
+  },
+  {
+    "timestamp": "2026-07-01T17:24:07.874645",
+    "text": "Happiness",
+    "mood_score": 10,
+    "themes": [
+      "happiness"
+    ],
+    "summary": "The user expresses a feeling of happiness."
+  },
+  {
+    "timestamp": "2026-07-01T17:38:18.950223",
+    "text": "I dont feel streesed at all, I am happy about everything",
+    "mood_score": 8,
+    "themes": [
+      "positive mood"
+    ],
+    "summary": "The user shared a positive mood."
+  },
+  {
+    "timestamp": "2026-07-01T17:38:39.295612",
+    "text": "Exercise",
+    "mood_score": 8,
+    "themes": [
+      "exercise"
+    ],
+    "summary": "The user mentioned movement or exercise."
+  },
+  {
+    "timestamp": "2026-07-01T17:39:07.449102",
+    "text": "Breathing in everything",
+    "mood_score": 5,
+    "themes": [
+      "general"
+    ],
+    "summary": "The user shared a journal check-in."
+  }
+]
