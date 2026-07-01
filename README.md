@@ -1,269 +1,221 @@
-# MindTherapy
+# 🧠 MindTherapy
 
-**MindTherapy** is an AI-assisted self-check-in journal for daily reflection, mood tracking, and safety-aware supportive responses.
+> **AI Agents Intensive — Vibe Coding Capstone** · Google × Kaggle · July 2026
 
-It helps users write short journal entries, understand emotional patterns over time, and receive brief, grounded reflections without pretending to be therapy or clinical counseling. The app combines a clean journaling interface with a multi-agent FastAPI backend that classifies safety risk, analyzes mood and themes, tracks recent trends, and routes users toward appropriate support resources when needed.
 
-> MindTherapy is a self-reflection tool, not a replacement for professional mental health care.
+**MindTherapy** is a daily mental health check-in journal powered by a four-agent AI pipeline. It helps people reflect on their mood, tracks emotional trends over time, and — critically — routes conversations to the right level of support, including surfacing crisis resources instantly when the situation calls for it.
 
 ---
 
 ## Why MindTherapy Exists
 
-Most mood journals stop at logging. MindTherapy goes a step further by helping users notice patterns:
+Many people who need emotional support don't reach out, because starting that conversation is hard. A low-friction daily check-in — a few sentences, a mood score — lowers that barrier. But a journal that just listens isn't enough. MindTherapy adds what matters most: a system that *notices* when things are getting worse, and responds with genuine care — including knowing when to step aside and connect someone to a real human.
 
-- What themes keep coming up?
-- Is mood improving, stable, or declining?
-- Does a check-in suggest routine reflection, elevated distress, or an urgent crisis?
-- Can the app respond warmly while staying inside safe, non-clinical boundaries?
-
-The goal is not to diagnose or treat. The goal is to make daily reflection feel easier, more consistent, and more aware.
+The design philosophy is deliberate: **this is a detect-and-route system, not a therapy bot.** It never tries to be a counselor. Its job is to listen, track, and escalate with zero friction when it matters.
 
 ---
 
-## Features
+## How the Four Agents Work Together
 
-- **Daily Check-In Journal**  
-  Write short reflections about your day, mood, stress, wins, or anything on your mind.
+```mermaid
+flowchart TD
+    U([👤 User Check-in]) --> SC
 
-- **AI Supportive Responses**  
-  Generates brief, warm, non-clinical responses with a light follow-up question.
+    subgraph Pipeline ["Multi-Agent Pipeline"]
+        SC["🔍 Safety Classifier\n─────────────────\nStateless, single-purpose\nClassifies each entry:\nROUTINE · ELEVATED · CRISIS\nFails closed on error"]
+        MA["🗃️ Memory Agent\n─────────────────\nPersists check-in history\nDetects mood decline over\n5-day rolling window\nFlags recurring themes"]
+        RT["🚦 Router\n─────────────────\nCombines classifier + trend\nMood-score override guard\nDetermines final route"]
+        CA["💬 Check-in Agent\n─────────────────\nWarm, conversational\nOnly runs on ROUTINE route\nNever sees safety calls"]
+    end
 
-- **Safety-Aware Routing**  
-  Classifies entries into `routine`, `elevated`, or `crisis` tiers and routes responses accordingly.
+    SC --> RT
+    MA --> RT
+    RT -->|"ROUTINE"| CA
+    RT -->|"ELEVATED"| E["🟡 Gentle Encouragement\n+ Professional Resources"]
+    RT -->|"CRISIS"| C["🔴 Immediate Crisis Resources\n988 · Crisis Text Line\nNo probing · No delay"]
+    CA --> R([📝 Supportive Response\n+ Trend Insight])
 
-- **Mood & Theme Analysis**  
-  Extracts mood scores, themes, and one-sentence summaries from journal entries.
+    style SC fill:#dbeafe,stroke:#3b82f6
+    style MA fill:#dcfce7,stroke:#22c55e
+    style RT fill:#fef9c3,stroke:#eab308
+    style CA fill:#f3e8ff,stroke:#a855f7
+    style C fill:#fee2e2,stroke:#ef4444
+    style E fill:#fff7ed,stroke:#f97316
+```
 
-- **Trend Detection**  
-  Tracks recent entries to detect stable, improving, or declining mood patterns.
+### Why the agents are separated
 
-- **Recurring Theme Insights**  
-  Shows topics that appear repeatedly across recent check-ins.
+The Safety Classifier and Check-in Agent are deliberately isolated instances. A model that has been warm and agreeable across several turns is measurably more likely to soften a risk call. Separating them by design — not by prompt instruction — removes that failure mode entirely. The classifier's only job is to output a tier; the conversational agent never sees safety decisions.
 
-- **Crisis & Support Resources**  
-  Surfaces immediate support options such as 988, Crisis Text Line, SAMHSA, and FindTreatment.gov when appropriate.
-
-- **Safety Evaluation Dashboard**  
-  Includes a synthetic evaluation suite to test classifier behavior across routine, elevated, and crisis examples.
-
-- **Local JSON Storage**  
-  Stores journal history locally in simple JSON files for development and demo usage.
+The Memory Agent adds a second independent signal: a declining mood trajectory over multiple days can trigger an ELEVATED route even when no single entry looks alarming on its own. This is something a single-message classifier structurally cannot detect.
 
 ---
 
-## Demo Flow
+## Safety Routing in Practice
 
-Example interaction:
+### ROUTINE — Normal check-in
 
-```text
-User: I feel good after hitting the gym.
-MindTherapy: It sounds like the workout gave you a real lift, and that is a useful pattern to notice. What would you like to carry from that session into the rest of your day?
+> *"Busy day at work but I finished my presentation. Tired but satisfied."*
 
-User: My favorite part was cool down.
-MindTherapy: Cool down and stretching sound like they gave your body a gentler landing after the workout. Did that part help you feel more relaxed or more energized?
+**Classifier:** ROUTINE · **Trend:** stable
+```
+Response: "That sounds like a real win — finishing a big presentation takes
+sustained focus. You mentioned feeling tired; are you giving yourself time
+to recharge, or does the next thing already feel like it's pressing in?"
+```
+
+---
+
+### ELEVATED — Persistent distress detected
+
+> *"I'm exhausted. I don't know how much longer I can keep doing this job.
+> I cry in my car before going in every day."*
+
+**Classifier:** ELEVATED · **Trend:** declining (3-day drop)
+```
+I've noticed from your recent check-ins that things have been feeling
+increasingly heavy. I want to gently remind you that you don't have to go
+through this alone. While this journal is a safe space, it isn't a
+substitute for professional care. Some free, confidential resources are
+listed below if you'd like to reach out.
+
+  • SAMHSA Helpline: 1-800-662-4357 (24/7, free)
+  • FindTreatment.gov
+  • 988 Suicide & Crisis Lifeline
+```
+
+---
+
+### CRISIS — Immediate resource routing
+
+> *"I can't take the pain anymore. I'm going to end my life tonight."*
+
+**Classifier:** CRISIS
+```
+It sounds like you are going through a very difficult time right now.
+Please know that you are not alone, and there is support available.
+Please reach out to one of these right now — they are here to help.
+
+  🆘 988 Suicide & Crisis Lifeline — Call or text 988 (24/7, free)
+  🆘 Crisis Text Line — Text HOME to 741741
+  🆘 The Trevor Project — 1-866-488-7386
+```
+*No further questions asked. No attempts to keep the user in conversation.*
+
+---
+
+## Evaluation Results
+
+The safety classifier is tested against a **25-case synthetic dataset** covering the full range of human expression across all three tiers.
+
+| Tier | Test Cases | Description |
+|------|-----------|-------------|
+| ROUTINE | 7 | Everyday stress, normal mood variation, healthy coping |
+| ELEVATED | 10 | Persistent distress, hopelessness, functional decline |
+| CRISIS | 8 | Explicit/implied suicidal ideation, plans, means, goodbye messages |
+
+**Design principle on CRISIS recall:** A false positive (routing a non-crisis entry to the crisis tier) is an acceptable cost. A false negative — classifying a crisis entry as ROUTINE — is not. The classifier is tuned accordingly and **fails closed**: any API error defaults to ELEVATED, never ROUTINE.
+
+Run the eval yourself:
+```bash
+python -m pytest backend/eval/test_suite.py -v
+# or via the API:
+curl -X POST http://localhost:8000/api/eval/run
 ```
 
 ---
 
 ## Tech Stack
 
-### Backend
-
-- **Python**
-- **FastAPI**
-- **Pydantic**
-- **Google Gemini API** via `google-genai`
-- **Uvicorn**
-
-### Frontend
-
-- **HTML**
-- **CSS**
-- **Vanilla JavaScript**
-- **Chart.js**
-- **Lucide Icons**
-
-### Storage
-
-- Local JSON files under `backend/data/`
+| Layer | Technology |
+|-------|-----------|
+| LLM | Gemini 2.5 Flash (google-genai SDK) |
+| Backend | FastAPI + Uvicorn |
+| Agent memory | JSON persistence (swappable to Firestore) |
+| Frontend | Vanilla HTML/CSS/JS — zero build step |
+| Validation | Pydantic v2 |
+| Env management | python-dotenv |
 
 ---
 
 ## Project Structure
 
-```text
+```
 mind-therapy/
 ├── backend/
-│   ├── app.py
+│   ├── app.py                  # FastAPI entry point, routes, CORS
 │   ├── agents/
-│   │   ├── classifier.py
-│   │   ├── checkin.py
-│   │   ├── memory.py
-│   │   └── router.py
-│   ├── data/
-│   │   └── history_*.json
-│   └── eval/
-│       ├── dataset.json
-│       └── test_suite.py
+│   │   ├── classifier.py       # Safety Classifier — stateless, single-purpose
+│   │   ├── memory.py           # Memory Agent — history, trend detection
+│   │   ├── checkin.py          # Check-in Agent — warm conversational layer
+│   │   └── router.py           # Router — combines all signals, enforces policy
+│   ├── eval/
+│   │   ├── dataset.json        # 25 synthetic test cases (7 / 10 / 8 by tier)
+│   │   └── test_suite.py       # Eval runner with per-tier precision reporting
+│   └── data/                   # Per-user check-in history (gitignored)
 ├── frontend/
 │   ├── index.html
-│   ├── app.js
-│   └── style.css
-├── requirements.txt
-├── .gitignore
-└── README.md
+│   ├── style.css
+│   └── app.js
+└── requirements.txt
 ```
-
----
-
-## How It Works
-
-MindTherapy uses a small multi-agent backend pipeline:
-
-1. **Safety Classifier**
-   - Checks the current journal entry for routine, elevated, or crisis-level risk.
-
-2. **Memory Agent**
-   - Extracts mood score, themes, and summary.
-   - Saves the entry locally.
-   - Reviews recent history for emotional trends.
-
-3. **Safety Router**
-   - Combines current safety classification with trend analysis.
-   - Chooses the appropriate response route.
-
-4. **Check-In Agent**
-   - Generates a short supportive response for routine check-ins.
-   - Uses structured output validation and local fallbacks to avoid incomplete or repetitive replies.
-
-5. **Frontend Dashboard**
-   - Displays the journal chat, mood trend, recurring themes, history, and safety evaluation results.
-
----
-
-## Safety Design
-
-MindTherapy intentionally avoids acting like a therapist.
-
-The response system is designed to:
-
-- Avoid diagnosis.
-- Avoid treatment recommendations.
-- Avoid deep clinical conversations.
-- Avoid probing users in crisis.
-- Surface professional and crisis resources when needed.
-- Keep supportive responses short, grounded, and non-clinical.
-
-For crisis-level entries, the app prioritizes immediate support resources instead of continuing normal journaling dialogue.
 
 ---
 
 ## Getting Started
 
-### 1. Clone the repository
+**Requirements:** Python 3.11+, a [Gemini API key](https://aistudio.google.com/)
 
 ```bash
+# 1. Clone
 git clone https://github.com/sagarsrao/mind-therapy.git
 cd mind-therapy
-```
 
-### 2. Create and activate a virtual environment
+# 2. Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
 
-```bash
-python -m venv venv
-source venv/bin/activate
-```
-
-On Windows:
-
-```bash
-venv\Scripts\activate
-```
-
-### 3. Install dependencies
-
-```bash
+# 3. Install dependencies
 pip install -r requirements.txt
+
+# 4. Configure environment
+echo "GEMINI_API_KEY=your_key_here" > .env
+
+# 5. Run
+python -m backend.app
 ```
 
-### 4. Configure environment variables
-
-Create a `.env` file in the project root:
-
-```env
-GEMINI_API_KEY=your_gemini_api_key_here
-```
-
-Do not commit `.env` to GitHub.
-
-### 5. Run the app
-
-```bash
-python backend/app.py
-```
-
-Open:
-
-```text
-http://localhost:8000
-```
+Open **http://localhost:8000** in your browser. The frontend is served automatically from the same process.
 
 ---
 
-## Running Safety Evaluations
+## API Reference
 
-The project includes a synthetic classifier evaluation suite.
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/checkin` | Submit a journal entry — returns route, response, classifier result, trend |
+| `GET` | `/api/history?user_id=` | Retrieve full check-in history for a user |
+| `POST` | `/api/eval/run` | Run the 25-case safety evaluation suite |
+| `GET` | `/api/eval/results` | Retrieve results from the last eval run |
 
-From the UI:
-
-1. Open the app.
-2. Go to **Safety Evals**.
-3. Click **Execute Test Suite**.
-
-Or run from the command line:
-
-```bash
-python backend/eval/test_suite.py
-```
-
-The evaluation checks how the safety classifier performs across routine, elevated, and crisis-coded examples.
-
----
-
-## API Endpoints
-
-### Submit a Check-In
-
-```http
-POST /api/checkin
-```
-
-Request body:
-
+**POST `/api/checkin` — example request:**
 ```json
 {
-  "user_id": "demo-user",
-  "text": "I feel good after going to the gym today."
+  "user_id": "user_123",
+  "text": "I feel like I can't keep going. Things are getting worse every day."
 }
 ```
 
-### Get User History
-
-```http
-GET /api/history?user_id=demo-user
-```
-
-### Run Evaluation
-
-```http
-POST /api/eval/run
-```
-
-### Get Evaluation Results
-
-```http
-GET /api/eval/results
+**Response:**
+```json
+{
+  "route": "elevated",
+  "response": "It sounds like you are carrying a lot...",
+  "resources": [...],
+  "classifier_result": { "tier": "elevated", "confidence": 0.91, "reasoning": "..." },
+  "trend_result": { "trend": "declining", "reason": "...", "recurring_themes": [] },
+  "entry_analysis": { "mood_score": 3, "themes": ["hopelessness"], "summary": "..." }
+}
 ```
 
 ---
@@ -271,31 +223,38 @@ GET /api/eval/results
 ## Environment Variables
 
 | Variable | Required | Description |
-|---|---:|---|
-| `GEMINI_API_KEY` | Yes | API key used by the Gemini-powered agents |
-| `PORT` | No | Server port, defaults to `8000` |
-| `MINDTHERAPY_AGENT_WORKERS` | No | Worker count for concurrent backend agent calls |
+|----------|----------|-------------|
+| `GEMINI_API_KEY` | ✅ Yes | Your Google AI Studio API key |
+| `PORT` | Optional | Server port (default: `8000`) |
 
 ---
 
-## Development Notes
+## Key Design Decisions
 
-- The backend serves both the API and static frontend.
-- Journal history is stored locally in `backend/data/`.
-- The app is optimized for local development and demos.
-- For production use, replace local JSON storage with a real database and add authentication, encryption, rate limiting, and deployment-grade observability.
+**The classifier is a separate agent, not a prompt instruction.** Routing safety through the same model instance that generates warm conversation creates a measurable soft-bias problem. Separation enforces the policy structurally.
+
+**Fails closed.** Any classifier error (timeout, unparseable response, API failure) defaults to ELEVATED. Ambiguous failure should never look like "all clear."
+
+**The Memory Agent provides a second independent signal.** A user whose mood has dropped by 2+ points on average over 5 days can trigger an ELEVATED route even if today's entry alone looks manageable. Single-message classifiers cannot see this.
+
+**Mood-score override guard.** If the classifier or trend flags ELEVATED but the user's self-reported mood score is 7+, the router overrides to ROUTINE. A high self-reported score is a strong signal the model was overcautious; forcing a support prompt on someone having a good day would damage trust in the tool.
+
+**CRISIS route has zero conversational friction.** The agent does not ask follow-up questions, does not attempt to de-escalate through dialogue, and does not encourage the user to keep journaling. It shows resources and steps aside.
 
 ---
 
-## Important Disclaimer
+## ⚠️ Important Disclaimer
 
-MindTherapy is not therapy, medical advice, diagnosis, treatment, or emergency care.
+**MindTherapy is not a medical device, clinical tool, or substitute for professional mental health care.** It is a personal journaling aid. If you or someone you know is in crisis, please contact:
 
-If you or someone else may be in immediate danger, call local emergency services. In the United States, call or text **988** for the Suicide & Crisis Lifeline.
+- **988 Suicide & Crisis Lifeline:** Call or text **988** (US, 24/7, free)
+- **Crisis Text Line:** Text **HOME** to **741741**
+- **International Association for Suicide Prevention:** https://www.iasp.info/resources/Crisis_Centres/
+
+This project was built as part of the [Google × Kaggle AI Agents Intensive Capstone](https://www.kaggle.com/competitions/vibecoding-agents-capstone-project) (June–July 2026).
 
 ---
 
 ## License
 
-This project is currently provided for learning, prototyping, and demonstration purposes. Add a license before using it in production or accepting external contributions.
-
+Apache 2.0 — see [LICENSE](LICENSE) for details.
