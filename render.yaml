@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: mind-therapy
+    runtime: python
+    plan: free
+
+    # Run from the project root so both backend/ and frontend/ are reachable
+    rootDir: .
+
+    buildCommand: pip install -r requirements.txt
+
+    # No --reload in production: it watches the filesystem and restarts on
+    # every file write, which wastes resources and can cause boot loops on Render.
+    startCommand: uvicorn backend.app:app --host 0.0.0.0 --port $PORT
+
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # Set this manually in the Render dashboard — never commit API keys
+      - key: PYTHON_VERSION
+        value: "3.11.0"     # Pin to 3.11 — stable, widely supported, avoids 3.14 breakage
+
+    healthCheckPath: /api/health   # Optional: add a /api/health route to app.py for uptime monitoring
+
+    # Render free tier: disk is ephemeral — backend/data/*.json history is wiped on redeploy.
+    # To persist user history across deploys, swap MemoryAgent's JSON storage for a
+    # managed database (Render Postgres free tier works as a drop-in).
+    # For the capstone demo, ephemeral storage is acceptable — just set a test user_id
+    # in the demo video so history is pre-populated before you record.
